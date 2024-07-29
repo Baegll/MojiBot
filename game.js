@@ -8,8 +8,9 @@ export class Game {
         this.turnCounter = 0;
         this.turnTimer = [];
         this.startTime = new Date();
-        this.playerList = {};
-        this.currentPlayer = null;
+        this.playerList = [];
+        this.turnOrder = [];
+        this.currentPlayer = 0;
 
         console.log(`Game ${this.gameId} started at ${this.startTime}`);
     }
@@ -35,15 +36,36 @@ export class Game {
     }
 
     // Sets
+
+    // Functions
     increaseTurnCounter() {
         this.turnCounter = this.turnCounter + 1;
     }
 
-    // Functions
-    joinGame(playerId) {
-        this.playerList[playerId] = new Player(playerId, this.gameId);
+    findPlayerInList(playerId) {
+        for (let player of this.playerList) {
+            if (player.getPlayerId === playerId) {
+                return player;
+            }
+        }
+        return null; // Return null if no player is found
     }
-    
+
+    joinGame(playerId) {
+        let playerInGame = (this.findPlayerInList(playerId) != null) ? true : false;
+        if (!playerInGame) {
+            this.playerList.push(new Player(playerId, this.gameId));
+            return this.playerList.length;
+        } else {
+            return -1;
+        }
+        
+    }
+
+    whoseTurn() {
+        return this.playerList[this.currentPlayer];
+    }
+
     startGame() {
 
     }

@@ -16,12 +16,12 @@ let game;
 let status = false;
 
 function noGameConfigured() {
-  return res.send({
+  return {
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
       content: `No game configured, please use \`/Create\``,
     },
-  });
+  };
 }
 
 /**
@@ -54,6 +54,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
 
     if (name === 'create') {
         game = new Game();
+        status = true;
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
@@ -71,15 +72,43 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
           },
         });
       } else {
-        return noGameConfigured();
+        return res.send(noGameConfigured());
       }
     }
 
     if (name === 'addplayer') {
       if (status) {
-        game.joinGame(req.body.member.user.username);
+        var playerNumber = game.joinGame(req.body.member.user.username);
+        if (playerNumber == -1) {
+          return res.send({
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+              content: `Player already in game`,
+            },
+          });
+        } else {
+          return res.send({
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                content: `Player number ${playerNumber} has joined.`,
+              },
+            });
+        }
       } else {
-        return noGameConfigured();
+        return res.send(noGameConfigured());
+      }
+    }
+
+    if (name === 'getturn') {
+      if (status) {
+        return res.send({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+              content: `Its currently @${game.whoseTurn()} 's turn.\nIt will be your turn in {} players' actions.`,
+            },
+          });
+      } else {
+        return res.send(noGameConfigured());
       }
     }
 

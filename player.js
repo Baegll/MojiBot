@@ -37,7 +37,7 @@ export class Player {
         this.actions = 0
         this.riftPoints = 0
         
-        console.log(`${this.playerId} created for game ${this.gameId}`)
+        console.log(`playerId: ${this.playerId} created for game ${this.gameId}`)
     }
 
     // Gets
