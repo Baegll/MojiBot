@@ -1,21 +1,36 @@
 import 'dotenv/config';
-import { getRPSChoices } from './game.js';
+import { Game } from './game.js';
 import { capitalize, InstallGlobalCommands } from './utils.js';
 
 // Get the game choices from game.js
-function createCommandChoices() {
-  const choices = getRPSChoices();
-  const commandChoices = [];
+// function createCommandChoices() {
+//   const commandChoices = [];
 
-  for (let choice of choices) {
-    commandChoices.push({
-      name: capitalize(choice),
-      value: choice.toLowerCase(),
-    });
-  }
+//   for (let choice of choices) {
+//     commandChoices.push({
+//       name: capitalize(choice),
+//       value: choice.toLowerCase(),
+//     });
+//   }
 
-  return commandChoices;
-}
+//   return commandChoices;
+// }
+
+// Command containing options
+// const CHALLENGE_COMMAND = {
+//   name: 'challenge',
+//   description: 'Challenge to a match of rock paper scissors',
+//   options: [
+//     {
+//       type: 3,
+//       name: 'object',
+//       description: 'Pick your object',
+//       required: true,
+//       choices: createCommandChoices(),
+//     },
+//   ],
+//   type: 1,
+// };
 
 // Simple test command
 const TEST_COMMAND = {
@@ -24,22 +39,24 @@ const TEST_COMMAND = {
   type: 1,
 };
 
-// Command containing options
-const CHALLENGE_COMMAND = {
-  name: 'challenge',
-  description: 'Challenge to a match of rock paper scissors',
-  options: [
-    {
-      type: 3,
-      name: 'object',
-      description: 'Pick your object',
-      required: true,
-      choices: createCommandChoices(),
-    },
-  ],
+const CREATE_GAME = {
+  name: 'create',
+  description: 'Create a game of MOJI',
   type: 1,
 };
 
-const ALL_COMMANDS = [TEST_COMMAND, CHALLENGE_COMMAND];
+const GET_ID = {
+  name: 'getid',
+  description: 'Get game ID',
+  type: 1,
+};
+
+const ADD_PLAYER = {
+  name: 'addplayer',
+  description: 'Add a player to the game',
+  type: 1,
+}
+
+export const ALL_COMMANDS = [TEST_COMMAND, CREATE_GAME, GET_ID, ADD_PLAYER];
 
 InstallGlobalCommands(process.env.APP_ID, ALL_COMMANDS);

@@ -15,11 +15,13 @@ function addStats(stats, addedStats) {
     return newStats;
 }
 
-class Player {
-    constructor(playerId) {
+export class Player {
+    constructor(playerId, gameId) {
         // Metadata
         this.playerId = playerId;
+        this.gameId = gameId;
         this.spiritSelected = 0;
+        this.timeTaken = 0;
         // Character Info:
         this.baseStats = emptyStats
         this.explorationStats = emptyStats
@@ -35,7 +37,7 @@ class Player {
         this.actions = 0
         this.riftPoints = 0
         
-        console.log(`${this.playerId} created`)
+        console.log(`${this.playerId} created for game ${this.gameId}`)
     }
 
     // Gets
@@ -116,10 +118,12 @@ class Player {
             this.activeAbility = spiritId.activeAbility;
         }
     }
+
+    // Functions
     adjustStat(statId, amount, reason) {
         if (reason = "EXPLORATION") {
             this.explorationStats.statId = this.explorationStats.statId + amount;
-        } else if (reason = "RESTORATOIN") {
+        } else if (reason = "RESTORATION") {
             this.restorationStats.statId = this.restorationStats.statId + amount;
         } else if (reason = "ADMINFIX") {
             this.adminFix.statId = this.adminFix.statId + amount;

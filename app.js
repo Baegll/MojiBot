@@ -5,12 +5,24 @@ import {
   InteractionResponseType,
   verifyKeyMiddleware,
 } from 'discord-interactions';
+import { Game } from './game.js';
 import { getRandomEmoji } from './utils.js';
 
 // Create an express app
 const app = express();
 // Get port, or default to 3000
 const PORT = process.env.PORT || 3000;
+let game;
+let status = false;
+
+function noGameConfigured() {
+  return res.send({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      content: `No game configured, please use \`/Create\``,
+    },
+  });
+}
 
 /**
  * Interactions endpoint URL where Discord will send HTTP requests
@@ -20,20 +32,14 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
   // Interaction type and data
   const { type, data } = req.body;
 
-  /**
-   * Handle verification requests
-   */
-  if (type === InteractionType.PING) {
-    return res.send({ type: InteractionResponseType.PONG });
-  }
-
-  /**
-   * Handle slash command requests
-   * See https://discord.com/developers/docs/interactions/application-commands#slash-commands
-   */
   if (type === InteractionType.APPLICATION_COMMAND) {
+    console.log(`\nStarting Interaction`);
+    try {
+      console.log(`Current game Id: ${game.getGameId}`);
+    } catch (error) {
+      console.log(`GameId undefined\nstatus: ${status}`);
+    }
     const { name } = data;
-
     // "test" command
     if (name === 'test') {
       // Send a message into the channel where command was triggered from
@@ -41,9 +47,40 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           // Fetches a random emoji to send from a helper function
-          content: `hello world ${getRandomEmoji()}`,
+          content: `hello ${req.body.member.user.username} ${getRandomEmoji()}`,
         },
       });
+    }
+
+    if (name === 'create') {
+        game = new Game();
+      return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: `created game: ${game.getGameId}`,
+        },
+      });
+    }
+
+    if (name === 'getid') {
+      if (status) {
+        return res.send({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: `current game: ${game.getGameId}`,
+          },
+        });
+      } else {
+        return noGameConfigured();
+      }
+    }
+
+    if (name === 'addplayer') {
+      if (status) {
+        game.joinGame(req.body.member.user.username);
+      } else {
+        return noGameConfigured();
+      }
     }
 
     console.error(`unknown command: ${name}`);
