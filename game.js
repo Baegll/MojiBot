@@ -66,6 +66,13 @@ export class Game {
         return this.playerList[this.currentPlayer];
     }
 
+	setPlayerSpirit(playerId, spiritId) {
+		this.playerList.find(player => player.playerId === playerId).selectSpirit(spiritId);
+		setTimeout(() => {
+			console.log(this.playerList.find(player => player.playerId === playerId));
+		}, 500) // Wait for data to update.
+	}
+
     startGame() {
 
     }

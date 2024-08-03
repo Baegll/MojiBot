@@ -6,23 +6,15 @@ import {
   verifyKeyMiddleware,
 } from 'discord-interactions';
 import { Game } from './game.js';
-import { getRandomEmoji } from './utils.js';
+import { getRandomEmoji, getSpiritList, statusEnum } from './utils.js';
+import { noGameConfigured, gameNotStarted, gameAlreadyStarted, playerNotInGame } from './universal-responses.js';
 
 // Create an express app
 const app = express();
 // Get port, or default to 3000
 const PORT = process.env.PORT || 3000;
 let game;
-let status = false;
-
-function noGameConfigured() {
-  return {
-    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-    data: {
-      content: `No game configured, please use \`/Create\``,
-    },
-  };
-}
+let status = statusEnum.NOT_CREATED;
 
 /**
  * Interactions endpoint URL where Discord will send HTTP requests
@@ -42,19 +34,25 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
     const { name } = data;
     // "test" command
     if (name === 'test') {
-      // Send a message into the channel where command was triggered from
-      return res.send({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          // Fetches a random emoji to send from a helper function
-          content: `hello ${req.body.member.user.username} ${getRandomEmoji()}`,
-        },
-      });
+		game = new Game();
+		status = statusEnum.CREATED;
+		let playerId = req.body.member.user.username;
+		game.joinGame(playerId);
+		console.log("setPlayerSpirit:")
+		game.setPlayerSpirit(playerId, 'LUJI');
+		// Send a message into the channel where command was triggered from
+		return res.send({
+			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+			data: {
+			// Fetches a random emoji to send from a helper function
+			content: `hello ${req.body.member.user.username} ${getRandomEmoji()}`,
+			},
+		});
     }
 
     if (name === 'create') {
         game = new Game();
-        status = true;
+        status = statusEnum.CREATED;
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
@@ -64,7 +62,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
     }
 
     if (name === 'getid') {
-      if (status) {
+      if (status !== statusEnum.NOT_CREATED) {
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
@@ -77,7 +75,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
     }
 
     if (name === 'joingame') {
-      if (status) {
+      if (status !== statusEnum.NOT_CREATED) {
         var playerNumber = game.joinGame(req.body.member.user.username);
         if (playerNumber == -1) {
           return res.send({
@@ -99,8 +97,25 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
       }
     }
 
+    if (name === 'pickspirit') {
+    	if (status === statusEnum.NOT_CREATED) {
+			return res.send(noGameConfigured());
+		} else if (status === statusEnum.STARTED) {
+			return res.send(gameAlreadyStarted());
+		} else {
+			// assign spirit to player
+			let playerId = req.body.member.user.username;
+			if (game.findPlayerInList(playerId) != null) {
+				game.setPlayerSpirit(playerId, spiritId);
+				return res.send(requestSuccess("pickSpirit"))
+			} else {
+			return res.send(playerNotInGame());
+			}
+		}
+    }
+
     if (name === 'getturn') {
-      if (status) {
+      if (status === statusEnum.STARTED) {
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
@@ -108,7 +123,11 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
             },
           });
       } else {
-        return res.send(noGameConfigured());
+        if (status === status.NOT_CREATED) {
+          return res.send(noGameConfigured());
+        } else {
+          return res.send(gameNotStarted());
+        }
       }
     }
 

@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { readFileSync } from 'fs';
 
 export async function DiscordRequest(endpoint, options) {
   console.log("Starting DiscordRequest");
@@ -38,6 +39,51 @@ export async function InstallGlobalCommands(appId, commands) {
     console.error(err);
   }
 }
+
+export function getSpiritList() {
+  const file = 'spirit_data.js';
+  const content = readFileSync(file, 'utf-8');
+
+  const exportStructRegex = /export\s+const\s+(\w+)\s*=\s*{/g;
+
+  let match;
+  const exportedStructs = [];
+  while ((match = exportStructRegex.exec(content)) !== null) {
+    exportedStructs.push(match[1]);
+  }
+
+  console.log('Exported Spirits:', exportedStructs);
+
+  return exportedStructs.filter(structName => structName !== 'EXAMPLE');
+}
+
+export async function getSpiritMap() {
+	const exportsMap = {};
+    const module = await import(`./spirit_data.js`);
+    for (var name of getSpiritList()) {
+        exportsMap[name] = module[name];
+    }
+    return exportsMap;
+}
+
+export function createSpiritChoices() {
+  const commandChoices = [];
+
+  for (let choice of getSpiritList()) {
+    commandChoices.push({
+      name: capitalize(choice),
+      value: choice.toLowerCase(),
+    });
+  }
+
+  return commandChoices;
+}
+
+export const statusEnum = {
+  NOT_CREATED: 'notCreated',
+  CREATED: 'created',
+  STARTED: 'started',
+};
 
 export var emptyStats = {
   presence:0,

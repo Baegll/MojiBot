@@ -1,4 +1,4 @@
-import { emptyStats } from './utils.js';
+import { emptyStats, getSpiritMap } from './utils.js';
 
 // create new statblock
 function addStats(stats, addedStats) {
@@ -20,7 +20,7 @@ export class Player {
         // Metadata
         this.playerId = playerId;
         this.gameId = gameId;
-        this.spiritSelected = 0;
+        this.spiritSelected = "NONE";
         this.timeTaken = 0;
         // Character Info:
         this.baseStats = emptyStats
@@ -112,11 +112,17 @@ export class Player {
 
     // Sets
     selectSpirit(spiritId) {
-        if (this.spiritSelected == 0) {
-            this.baseStats = spiritId.stats;
-            this.passiveAbility = spiritId.passiveAbility;
-            this.activeAbility = spiritId.activeAbility;
-        }
+        console.log("STARTING selectSpirit");
+        getSpiritMap()
+            .then(spiritMap => {
+                const selectedSpirit = spiritMap[spiritId];
+                if (this.spiritSelected == "NONE") {
+                    this.spiritSelected = spiritId;
+                    this.baseStats = selectedSpirit.stats;
+                    this.passiveAbility = selectedSpirit.passiveAbility;
+                    this.activeAbility = selectedSpirit.activeAbility;
+                }
+            });
     }
 
     // Functions
