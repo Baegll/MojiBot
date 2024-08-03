@@ -76,7 +76,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
       }
     }
 
-    if (name === 'addplayer') {
+    if (name === 'joingame') {
       if (status) {
         var playerNumber = game.joinGame(req.body.member.user.username);
         if (playerNumber == -1) {

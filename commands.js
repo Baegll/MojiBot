@@ -51,8 +51,8 @@ const GET_ID = {
   type: 1,
 };
 
-const ADD_PLAYER = {
-  name: 'addplayer',
+const JOIN_GAME = {
+  name: 'joingame',
   description: 'Add a player to the game',
   type: 1,
 }
@@ -63,6 +63,6 @@ const GET_TURN = {
   type: 1,
 }
 
-export const ALL_COMMANDS = [TEST_COMMAND, CREATE_GAME, GET_ID, ADD_PLAYER, GET_TURN];
+export const ALL_COMMANDS = [TEST_COMMAND, CREATE_GAME, GET_ID, JOIN_GAME, GET_TURN];
 
 InstallGlobalCommands(process.env.APP_ID, ALL_COMMANDS);
