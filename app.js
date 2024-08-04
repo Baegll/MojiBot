@@ -6,8 +6,8 @@ import {
   verifyKeyMiddleware,
 } from 'discord-interactions';
 import { Game } from './game.js';
-import { getRandomEmoji, getSpiritList, statusEnum } from './utils.js';
-import { noGameConfigured, gameNotStarted, gameAlreadyStarted, playerNotInGame } from './universal-responses.js';
+import { getRandomEmoji, statusEnum } from './utils.js';
+import { noGameConfigured, gameNotStarted, gameAlreadyStarted, playerNotInGame, requestSuccess, requestFailure } from './universal-responses.js';
 
 // Create an express app
 const app = express();
@@ -34,12 +34,6 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
     const { name } = data;
     // "test" command
     if (name === 'test') {
-		game = new Game();
-		status = statusEnum.CREATED;
-		let playerId = req.body.member.user.username;
-		game.joinGame(playerId);
-		console.log("setPlayerSpirit:")
-		game.setPlayerSpirit(playerId, 'LUJI');
 		// Send a message into the channel where command was triggered from
 		return res.send({
 			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -98,16 +92,19 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
     }
 
     if (name === 'pickspirit') {
+		let playerId = req.body.member.user.username;
+		let spiritId = req.body.data.options[0].value.toUpperCase();
     	if (status === statusEnum.NOT_CREATED) {
 			return res.send(noGameConfigured());
 		} else if (status === statusEnum.STARTED) {
 			return res.send(gameAlreadyStarted());
+		} else if (game.didPlayerPickSpirit(playerId)) {
+			console.log(`${game.didPlayerPickSpirit(playerId)}, ${playerId}, ${spiritId}`);
+			return res.send(requestFailure("pickSpirit", `${playerId} already selected spirit: ${spiritId}`));
 		} else {
-			// assign spirit to player
-			let playerId = req.body.member.user.username;
 			if (game.findPlayerInList(playerId) != null) {
 				game.setPlayerSpirit(playerId, spiritId);
-				return res.send(requestSuccess("pickSpirit"))
+				return res.send(requestSuccess("pickSpirit"));
 			} else {
 			return res.send(playerNotInGame());
 			}

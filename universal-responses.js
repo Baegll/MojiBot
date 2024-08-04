@@ -1,3 +1,9 @@
+import {
+	InteractionType,
+	InteractionResponseType,
+	verifyKeyMiddleware,
+} from 'discord-interactions';
+
 export function noGameConfigured() {
     return {
 		type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -39,6 +45,15 @@ export function requestSuccess(requestType) {
 		type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 		data: {
 			content: `Request ${requestType} was successful.`,
+		},
+    };
+}
+
+export function requestFailure(requestType, reason) {
+    return {
+		type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+		data: {
+			content: `Request ${requestType} was not successful. Because ${reason}.`,
 		},
     };
 }

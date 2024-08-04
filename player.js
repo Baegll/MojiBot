@@ -45,6 +45,9 @@ export class Player {
         console.log(this.playerId);
         return this.playerId;
     }
+    get getSpiritSelected() {
+        return this.spiritSelected;
+    }
     get getStats() {
         var stats = emptyStats;
         stats = addStats(stats, this.baseStats);
@@ -112,7 +115,7 @@ export class Player {
 
     // Sets
     selectSpirit(spiritId) {
-        console.log("STARTING selectSpirit");
+        console.log(`STARTING selectSpirit: ${spiritId}`);
         getSpiritMap()
             .then(spiritMap => {
                 const selectedSpirit = spiritMap[spiritId];

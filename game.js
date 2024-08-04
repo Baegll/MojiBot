@@ -73,6 +73,16 @@ export class Game {
 		}, 500) // Wait for data to update.
 	}
 
+	didPlayerPickSpirit(playerId) {
+		if (this.playerList.find(player => player.playerId === playerId).getSpiritSelected === "NONE") {
+			console.log(`Picked spirit: ${this.playerList.find(player => player.playerId === playerId).getSpiritSelected}`);
+			return false;
+		} else {
+			console.log(`Picked spirit: ${this.playerList.find(player => player.playerId === playerId).getSpiritSelected}`);
+			return true;
+		}
+	}
+
     startGame() {
 
     }
