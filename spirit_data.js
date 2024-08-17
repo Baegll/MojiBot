@@ -24,17 +24,17 @@ export const LUJI = {
         inventory:1,
         strike:1
     },
-    passiveAbility:"He does not need to reveal himself when he fails to Scout or Venture a Rift Room. When another spirit reveals themself in a Poles of Will room, Luji gets one +1 to Health.",
+    passiveAbility:"He does not need to reveal himself when he fails to Venture or Voyage a Rift Room. When another spirit reveals themself in a Poles of Will room, Luji gets one +1 to Health.",
     activeAbility:"May spotlight both of the Poles of Will rooms.",
 }
 
 export const SHUJA = {
     stats:{
-        presence:3,
+        presence:4,
         health:2,
         speed:2,
         luck:6,
-        knowledge:4,
+        knowledge:5,
         initiative:5,
         inventory:1,
         strike:1
@@ -55,7 +55,7 @@ export const TYHOLI = {
         strike:1
     },
     passiveAbility:"Whenever Tyholi kills another spirit he may add one point to any statistic.",
-    activeAbility:"May strike in an adjacent room.",
+    activeAbility:"May strike in an adjacent room once per turn.",
 }
 
 export const PHAROS = {
@@ -99,7 +99,7 @@ export const ULAZA = {
         inventory:1,
         strike:1
     },
-    passiveAbility:"Can continue to make move, sabotage, and spotlight actions even while recovering. She will return to the arena in the last spot she occupied when alive.",
+    passiveAbility:"Can continue to make move, sabotage, and spotlight actions even while recovering. She will return to the arena in the last spot she occupied when alive. She may add her presence to a possession luck die roll off.",
     activeAbility:"She may pick a dead spirit that still has presence left, that spirit must reveal where they return to the arena to her.",
 }
 
